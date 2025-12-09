@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from yahooquery import Ticker
 
 from ydata.synthesizers.timeseries.model import TimeSeriesSynthesizer
@@ -80,3 +81,13 @@ def plot_regime_switching(df: pd.DataFrame, regime_list: list, k_regimes = 2) ->
 
     fig.update_layout(height=700, title_font=dict(size=26))
     fig.show()
+
+def spectral_entropy(time_series: pd.Series):
+    spectrum = np.fft.fft(time_series)
+    ps = np.abs(spectrum) ** 2
+    ps_sum = np.sum(ps)
+    if ps_sum == 0.0:
+        return 0.0
+    p = ps / ps_sum
+    p = p[p != 0]
+    return -np.sum(p * np.log2(p)) / np.log2(len(ps))
